@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loadout // Character Codex</title>
+<style>
+  :root{
+    --bg: #0c0e14;
+    --bg-panel: #12151f;
+    --bg-card: #171b28;
+    --line: #262c40;
+    --text: #e8eaf2;
+    --text-dim: #8a90a8;
+    --fortnite: #7c5cff;
+    --marvel: #ff3b5c;
+    --minecraft: #5ecb63;
+    --gold: #ffc94d;
+  }
+
+  *{ box-sizing: border-box; margin:0; padding:0; }
+
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+  }
+
+  /* subtle grid texture backdrop, arcade-scanline feel */
+  body::before{
+    content:"";
+    position: fixed; inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  header{
+    position: relative; z-index: 1;
+    text-align:center;
+    padding: 64px 20px 40px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .eyebrow{
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.35em;
+    font-size: 12px;
+    color: var(--gold);
+    margin-bottom: 14px;
+  }
+
+  h1{
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    font-size: clamp(38px, 7vw, 72px);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, var(--fortnite), var(--marvel) 50%, var(--minecraft));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    line-height: 1.05;
+  }
+
+  header p{
+    color: var(--text-dim);
+    margin-top: 14px;
+    font-size: 15px;
+    max-width: 520px;
+    margin-left:auto; margin-right:auto;
+  }
+
+  /* ---- filter tabs ---- */
+  .tabs{
+    position: relative; z-index: 1;
+    display:flex;
+    justify-content:center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 28px 20px;
+  }
+
+  .tab{
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+    padding: 10px 20px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .tab:hover{ color: var(--text); border-color: #3a4262; }
+
+  .tab.active[data-game="fortnite"]{ background: var(--fortnite); color:#fff; border-color: var(--fortnite); }
+  .tab.active[data-game="marvel"]{ background: var(--marvel); color:#fff; border-color: var(--marvel); }
+  .tab.active[data-game="minecraft"]{ background: var(--minecraft); color:#0c0e14; border-color: var(--minecraft); }
+  .tab.active[data-game="all"]{ background: var(--gold); color:#0c0e14; border-color: var(--gold); }
+
+  /* ---- grid ---- */
+  main{
+    position: relative; z-index: 1;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 10px 20px 100px;
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+  }
+
+  .card{
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    display:flex;
+    flex-direction: column;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+  .card:hover{ transform: translateY(-4px); border-color: #454e70; }
+
+  .card-top{
+    height: 130px;
+    display:flex; align-items:center; justify-content:center;
+    font-size: 54px;
+    position: relative;
+  }
+  .card[data-game="fortnite"] .card-top{ background: radial-gradient(circle at 30% 30%, rgba(124,92,255,0.35), transparent 70%), #1a1030; }
+  .card[data-game="marvel"] .card-top{ background: radial-gradient(circle at 30% 30%, rgba(255,59,92,0.35), transparent 70%), #2a0e14; }
+  .card[data-game="minecraft"] .card-top{ background: radial-gradient(circle at 30% 30%, rgba(94,203,99,0.35), transparent 70%), #10230f; }
+
+  .tag{
+    position:absolute; top:10px; left:10px;
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 5px;
+    background: rgba(0,0,0,0.4);
+  }
+  .card[data-game="fortnite"] .tag{ color: var(--fortnite); }
+  .card[data-game="marvel"] .tag{ color: var(--marvel); }
+  .card[data-game="minecraft"] .tag{ color: var(--minecraft); }
+
+  .card-body{ padding: 18px 18px 20px; flex:1; display:flex; flex-direction:column; gap:10px; }
+
+  .card-body h3{ font-size: 18px; letter-spacing: 0.02em; }
+
+  .role{
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+  }
+
+  .card-body p{
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: #c3c7d8;
+  }
+
+  .stats{
+    display:flex;
+    gap: 14px;
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px dashed var(--line);
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .stats span b{ color: var(--text); display:block; font-size:13px; }
+
+  footer{
+    text-align:center;
+    padding: 30px 20px 50px;
+    color: var(--text-dim);
+    font-size: 12px;
+    border-top: 1px solid var(--line);
+    position: relative; z-index:1;
+  }
+
+  @media (max-width: 480px){
+    header{ padding: 48px 16px 30px; }
+    .tabs{ gap:8px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">// A FAN-MADE CODEX</div>
+  <h1>Loadout<br>Character Codex</h1>
+  <p>An unofficial, community-style reference for characters across Fortnite, Marvel Rivals, and Minecraft — builds, roles, and quick facts in one place.</p>
+</header>
+
+<div class="tabs">
+  <button class="tab active" data-game="all">All Worlds</button>
+  <button class="tab" data-game="fortnite">Fortnite</button>
+  <button class="tab" data-game="marvel">Marvel Rivals</button>
+  <button class="tab" data-game="minecraft">Minecraft</button>
+</div>
+
+<main id="grid"></main>
+
+<footer>
+  Built as a fan reference. Character names belong to their respective publishers — Epic Games, Marvel/NetEase, and Mojang/Microsoft.
+</footer>
+
+<script>
+  const characters = [
+    // FORTNITE
+    { game:"fortnite", icon:"🪂", name:"Jonesy", role:"Default Operative", type:"All-Rounder",
+      desc:"The original face of the island. A balanced, no-frills operative often used as the baseline skin new players start with.",
+      stats:{ Mobility:"Med", Style:"Classic" } },
+    { game:"fortnite", icon:"🍑", name:"Peely", role:"Comic Relief", type:"Fan Favorite",
+      desc:"A sentient banana who became one of the game's most recognizable mascots, known for silly variants and crossover appearances.",
+      stats:{ Mobility:"Med", Style:"Goofy" } },
+    { game:"fortnite", icon:"❄️", name:"The Ice King", role:"Seasonal Boss", type:"Mythic-tier",
+      desc:"A frost-themed antagonist tied to winter storylines, associated with ice-based map events and limited-time challenges.",
+      stats:{ Mobility:"Low", Style:"Boss" } },
+    { game:"fortnite", icon:"🦊", name:"Fennix", role:"Squad Leader", type:"Tactical",
+      desc:"A sharp, tactically-minded original character introduced as part of a squad-based season storyline.",
+      stats:{ Mobility:"High", Style:"Tactical" } },
+
+    // MARVEL RIVALS
+    { game:"marvel", icon:"🕸️", name:"Web Slinger", role:"Duelist", type:"High Mobility",
+      desc:"A swing-and-strike style hero built around vertical traversal, quick repositioning, and picking off isolated targets.",
+      stats:{ Difficulty:"Med", Range:"Close" } },
+    { game:"marvel", icon:"🔨", name:"Storm Caller", role:"Strategist", type:"Support",
+      desc:"A weather-manipulating support who buffs allies and controls zones with area-based storm effects.",
+      stats:{ Difficulty:"High", Range:"Ranged" } },
+    { game:"marvel", icon:"🛡️", name:"Iron Guardian", role:"Vanguard", type:"Tank",
+      desc:"An armored front-liner designed to absorb damage and create space for the team with defensive tech.",
+      stats:{ Difficulty:"Low", Range:"Mixed" } },
+    { game:"marvel", icon:"🌀", name:"Mind Weaver", role:"Strategist", type:"Support",
+      desc:"A telepathic support focused on crowd control and disabling enemy abilities at key moments.",
+      stats:{ Difficulty:"High", Range:"Ranged" } },
+
+    // MINECRAFT
+    { game:"minecraft", icon:"🧟", name:"Zombie", role:"Hostile Mob", type:"Overworld",
+      desc:"A slow-moving hostile mob that spawns at night or in dark areas and burns in direct sunlight.",
+      stats:{ Threat:"Low", Biome:"Overworld" } },
+    { game:"minecraft", icon:"💀", name:"Skeleton", role:"Hostile Mob", type:"Overworld",
+      desc:"A ranged hostile mob that fires arrows from a distance and also burns in daylight unless sheltered.",
+      stats:{ Threat:"Med", Biome:"Overworld" } },
+    { game:"minecraft", icon:"🐷", name:"Piglin", role:"Neutral Mob", type:"Nether",
+      desc:"A Nether-dwelling mob that can be bartered with using gold, but turns hostile if you're caught without armor.",
+      stats:{ Threat:"Med", Biome:"Nether" } },
+    { game:"minecraft", icon:"🐉", name:"Ender Dragon", role:"Boss Mob", type:"The End",
+      desc:"The game's final boss, fought atop an obsidian platform in The End dimension using crystals for healing.",
+      stats:{ Threat:"High", Biome:"The End" } },
+  ];
+
+  const grid = document.getElementById('grid');
+  const tabs = document.querySelectorAll('.tab');
+
+  function render(filter){
+    grid.innerHTML = '';
+    characters
+      .filter(c => filter === 'all' || c.game === filter)
+      .forEach(c => {
+        const statEntries = Object.entries(c.stats)
+          .map(([k,v]) => `<span>${k}<b>${v}</b></span>`).join('');
+
+        grid.innerHTML += `
+          <div class="card" data-game="${c.game}">
+            <div class="card-top">
+              <span class="tag">${c.game}</span>
+              ${c.icon}
+            </div>
+            <div class="card-body">
+              <div class="role">${c.role} · ${c.type}</div>
+              <h3>${c.name}</h3>
+              <p>${c.desc}</p>
+              <div class="stats">${statEntries}</div>
+            </div>
+          </div>
+        `;
+      });
+  }
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      render(tab.dataset.game);
+    });
+  });
+
+  render('all');
+</script>
+
+</body>
+</html>
